@@ -3,5 +3,6 @@
 
 void ui_init(void);
 void ui_run(void);
+void ui_set_gamefield(char** gf);
 
 #endif

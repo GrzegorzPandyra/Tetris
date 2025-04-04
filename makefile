@@ -13,16 +13,18 @@ SRC_LIST += $(wildcard $(SRC_DIR)/*.c)
 SRC_LIST += $(wildcard $(SRC_DIR)/ui/*.c)
 SRC_LIST += $(wildcard $(SRC_DIR)/input/*.c)
 SRC_LIST += $(wildcard $(SRC_DIR)/log/*.c)
+SRC_LIST += $(wildcard $(SRC_DIR)/engine/*.c)
 
 #assemble list of include directories
 INCLUDE_DIR += -I $(SRC_DIR)
 INCLUDE_DIR += -I $(SRC_DIR)/ui
 INCLUDE_DIR += -I $(SRC_DIR)/input
 INCLUDE_DIR += -I $(SRC_DIR)/log
+INCLUDE_DIR += -I $(SRC_DIR)/engine
 
 #compiler
 CC=gcc
-CFLAGS= -Wall -Os -std=c2x
+CFLAGS= -Wall -Os -std=c2x -g
 LIB= -lncurses
 DEFINES = 	-D DUMMY_DEFINE_1 \
 			-D _POSIX_C_SOURCE=200809L \

@@ -1,28 +1,32 @@
 #include <ncurses.h>
 #include "ui.h"
+#include "global.h"
 
 #define WIN_MAIN_X 10
 #define WIN_MAIN_Y 10
-#define WIN_MAIN_WIDTH 12
-#define WIN_MAIN_HEIGHT 14
+#define WIN_MAIN_WIDTH  GLOBAL_MAIN_WIN_WIDTH
+#define WIN_MAIN_HEIGHT GLOBAL_MAIN_WIN_HEIGHT
 
-#define WIN_SCORE_X (WIN_MAIN_X+WIN_MAIN_WIDTH+2)
-#define WIN_SCORE_Y WIN_MAIN_Y
-#define WIN_SCORE_WIDTH 14
+#define WIN_SCORE_X     (WIN_MAIN_X+WIN_MAIN_WIDTH+2)
+#define WIN_SCORE_Y      WIN_MAIN_Y
+#define WIN_SCORE_WIDTH  14
 #define WIN_SCORE_HEIGHT 3
 
-#define WIN_NEXT_X WIN_SCORE_X
-#define WIN_NEXT_Y (WIN_SCORE_Y+WIN_SCORE_HEIGHT)
-#define WIN_NEXT_WIDTH WIN_SCORE_WIDTH
+#define WIN_NEXT_X      WIN_SCORE_X
+#define WIN_NEXT_Y     (WIN_SCORE_Y+WIN_SCORE_HEIGHT)
+#define WIN_NEXT_WIDTH  WIN_SCORE_WIDTH
 #define WIN_NEXT_HEIGHT 3
 
-#define WIN_MENU_X WIN_NEXT_X
-#define WIN_MENU_Y (WIN_NEXT_Y+WIN_NEXT_HEIGHT)
-#define WIN_MENU_WIDTH WIN_SCORE_WIDTH
+#define WIN_MENU_X      WIN_NEXT_X
+#define WIN_MENU_Y     (WIN_NEXT_Y+WIN_NEXT_HEIGHT)
+#define WIN_MENU_WIDTH  WIN_SCORE_WIDTH
 #define WIN_MENU_HEIGHT 8
 
 #define NUM_ELEM(x) (sizeof(x)/sizeof(x[0]))
 
+/****************************************************
+ * Typedefs
+ ****************************************************/
 typedef void (*VoidCbk)(void);
 typedef enum 
 {
@@ -42,13 +46,19 @@ typedef struct
     VoidCbk handler;
 } Window;
 
-static void print_all_windows(void);
+/****************************************************
+ * Function declarations
+ ****************************************************/
+static void print_all(void);
 static void create_all_windows(void);
 static void print_main_window(void);
 static void print_score_window(void);
 static void print_next_window(void);
 static void print_menu_window(void);
 
+/****************************************************
+ * Local variables
+ ****************************************************/
 static Window win[] = 
 {
     {WIN_ID_MAIN,  NULL, WIN_MAIN_X,  WIN_MAIN_Y,  WIN_MAIN_WIDTH,  WIN_MAIN_HEIGHT,  print_main_window},
@@ -56,7 +66,11 @@ static Window win[] =
     {WIN_ID_NEXT,  NULL, WIN_NEXT_X,  WIN_NEXT_Y,  WIN_NEXT_WIDTH,  WIN_NEXT_HEIGHT,  print_next_window},
     {WIN_ID_MENU,  NULL, WIN_MENU_X,  WIN_MENU_Y,  WIN_MENU_WIDTH,  WIN_MENU_HEIGHT,  print_menu_window}
 };
+static char** gamefield = NULL;
 
+/****************************************************
+ * API
+ ****************************************************/
 void ui_init(void)
 {
     initscr();
@@ -68,9 +82,17 @@ void ui_init(void)
 
 void ui_run(void)
 {
-    print_all_windows();
+    print_all();
 }
 
+void ui_set_gamefield(char** gf)
+{
+    gamefield = gf;
+}
+
+/****************************************************
+ * Private functions
+ ****************************************************/
 static void create_all_windows(void)
 {
     for(int i=0; i<NUM_ELEM(win); ++i)
@@ -79,8 +101,16 @@ static void create_all_windows(void)
     }
 }
 
-static void print_all_windows(void)
+static void print_all(void)
 {
+    /* Print gamefield */
+    for(int i=0; i<(WIN_MAIN_WIDTH-2); i++)
+    {
+        if((gamefield!= NULL) && (gamefield[i] != NULL))
+            mvwprintw(win[WIN_ID_MAIN].win, i+1, 1, "%s", gamefield[i]);
+    }
+
+    /* Print windows */
     for(int i=0; i<NUM_ELEM(win); ++i)
     {
         if(win[i].handler != NULL)
