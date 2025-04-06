@@ -18,6 +18,7 @@ typedef struct EngineContext {
 void engine_init(void);
 void engine_run(void);
 EngineContext* engine_get_context(void);
-void check_full_rows(void);
+void engine_check_full_rows(void);
+int engine_get_score(void);
 
 #endif

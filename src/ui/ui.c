@@ -131,6 +131,8 @@ static void print_main_window(void)
 
 static void print_score_window(void)
 {
+    int score = engine_get_score();
+    mvwprintw(win[WIN_ID_SCORE].win, 1, 1, "Score: %d", score);
     box(win[WIN_ID_SCORE].win, 0, 0);
 }
 

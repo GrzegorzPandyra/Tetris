@@ -60,7 +60,7 @@ void engine_init(void)
     {
         brick_move(&ecb.ctx, 1, 0);
     }
-    check_full_rows();
+    engine_check_full_rows();
 
     struct timespec ts = {0, ENGINE_TICK_NS};
     nanosleep(&ts, NULL);
@@ -71,7 +71,7 @@ EngineContext* engine_get_context(void)
     return &ecb.ctx;
 }
 
-void check_full_rows(void)
+void engine_check_full_rows(void)
 {
     for(int i=ENGINE_GAMEFIELD_HEIGHT; i>0; i--)
     {
@@ -85,6 +85,11 @@ void check_full_rows(void)
             }
         }
     }
+}
+
+int engine_get_score(void)
+{
+    return ecb.score;
 }
 
 /****************************************************
