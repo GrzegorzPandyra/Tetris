@@ -24,7 +24,7 @@ INCLUDE_DIR += -I $(SRC_DIR)/engine
 
 #compiler
 CC=gcc
-CFLAGS= -Wall -Os -std=c2x -g
+CFLAGS= -Wall -O0 -ggdb -std=c2x 
 LIB= -lncurses
 DEFINES = 	-D DUMMY_DEFINE_1 \
 			-D _POSIX_C_SOURCE=200809L \
@@ -41,9 +41,19 @@ tetris:
 	@$(CC) $(SRC_LIST) $(LIB) $(INCLUDE_DIR) $(CFLAGS) $(DEFINES) -o $(OUT_DIR)/$@
 	$(info OK	Finished building target: $@)
 
+
+#compile project Minisumo IV into .elf file
+debug: 
+	$(info  ********************************************************************************************************* )
+	$(info 	Building target: $@)
+	$(info List of file to be build:)
+	$(foreach file, $(SRC_LIST),  $(info $(file)))
+	@$(CC) $(SRC_LIST) $(LIB) $(INCLUDE_DIR) $(CFLAGS) $(DEFINES) -D _DEBUG -o $(OUT_DIR)/$@
+	$(info OK	Finished building target: $@)
+
 #make clean
 clean:
-	@rm -f $(OUT_DIR)/tetris
+	@rm -f $(OUT_DIR)/*
 	$(info ### Clean finished! ###)
 
 #just decoration

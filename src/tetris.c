@@ -48,11 +48,10 @@ static void* run_ui_thread(void* ptr)
 
 static void* run_engine_thread(void* ptr)
 {
-    struct timespec ts = {0, THREAD_SLEEP_NS};
     while(1)
     {
         engine_run();
-        nanosleep(&ts, NULL);
+        
     }
     return NULL;
 }

@@ -1,6 +1,7 @@
 #include <ncurses.h>
 #include "ui.h"
 #include "global.h"
+#include "log.h"
 
 #define WIN_MAIN_X 10
 #define WIN_MAIN_Y 10
@@ -66,7 +67,7 @@ static Window win[] =
     {WIN_ID_NEXT,  NULL, WIN_NEXT_X,  WIN_NEXT_Y,  WIN_NEXT_WIDTH,  WIN_NEXT_HEIGHT,  print_next_window},
     {WIN_ID_MENU,  NULL, WIN_MENU_X,  WIN_MENU_Y,  WIN_MENU_WIDTH,  WIN_MENU_HEIGHT,  print_menu_window}
 };
-static char** gamefield = NULL;
+static char (*gamefield)[ENGINE_GAMEFIELD_WIDTH] = NULL;
 
 /****************************************************
  * API
@@ -85,9 +86,9 @@ void ui_run(void)
     print_all();
 }
 
-void ui_set_gamefield(char** gf)
+void ui_set_gamefield(void* addr)
 {
-    gamefield = gf;
+    gamefield = addr;
 }
 
 /****************************************************
@@ -104,10 +105,12 @@ static void create_all_windows(void)
 static void print_all(void)
 {
     /* Print gamefield */
-    for(int i=0; i<(WIN_MAIN_WIDTH-2); i++)
+    for(int i=0; i<(WIN_MAIN_HEIGHT-2); i++)
     {
-        if((gamefield!= NULL) && (gamefield[i] != NULL))
+        if(gamefield != NULL)
             mvwprintw(win[WIN_ID_MAIN].win, i+1, 1, "%s", gamefield[i]);
+        else
+            stdlog("gamefield is NULL");
     }
 
     /* Print windows */
