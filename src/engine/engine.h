@@ -1,12 +1,21 @@
 #ifndef ENGINE_H
 #define ENGINE_H
 
+#include <pthread.h>
 #include "global.h"
+#include "brick_def.h"
 
 #define ENGINE_GAMEFIELD_WIDTH  (GLOBAL_MAIN_WIN_WIDTH -2*GLOBAL_MAIN_WIN_BORDER+1)
 #define ENGINE_GAMEFIELD_HEIGHT (GLOBAL_MAIN_WIN_HEIGHT-2*GLOBAL_MAIN_WIN_BORDER)
 
+typedef struct EngineContext {
+    Brick current_brick;
+    char gamefield[ENGINE_GAMEFIELD_HEIGHT][ENGINE_GAMEFIELD_WIDTH];
+    pthread_mutex_t gamefield_mtx;
+} EngineContext;
+
 void engine_init(void);
 void engine_run(void);
+EngineContext* engine_get_context(void);
 
 #endif

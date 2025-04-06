@@ -5,7 +5,7 @@
 #include "brick.h"
 #include "log.h"
 
-#define BRICK_GRID_SIZE 4
+#define KEYMAP_ROTATION_CONST_DEG 90
 
 /****************************************************
  * Typedefs
@@ -18,8 +18,8 @@
 /****************************************************
  * Static function declaration
  ****************************************************/
-static void print(const Brick* brick, char gamefield[ENGINE_GAMEFIELD_HEIGHT][ENGINE_GAMEFIELD_WIDTH], pthread_mutex_t* mtx, char print_char);
-static void print_long(const Brick* brick, char gamefield[ENGINE_GAMEFIELD_HEIGHT][ENGINE_GAMEFIELD_WIDTH], char print_char);
+static void print(EngineContext* ctx, char print_char);
+static void print_long(EngineContext* ctx, char print_char);
 /****************************************************
  * API
  ****************************************************/
@@ -35,48 +35,55 @@ Brick brick_get_new(void){
 
 
 
-void brick_move(Brick* brick, char gamefield[ENGINE_GAMEFIELD_HEIGHT][ENGINE_GAMEFIELD_WIDTH], pthread_mutex_t* mtx, int mv_y, int mv_x){
-    print(brick, gamefield, mtx, GLOBAL_BRICK_ERASE);
-    brick->x += mv_x;
-    brick->y += mv_y;
-    print(brick, gamefield, mtx, GLOBAL_BRICK_CHAR);
+void brick_move(EngineContext* ctx, int mv_y, int mv_x){
+    print(ctx, GLOBAL_BRICK_ERASE);
+    (ctx->current_brick).x += mv_x;
+    (ctx->current_brick).y += mv_y;
+    print(ctx, GLOBAL_BRICK_CHAR);
+}
+
+void brick_rotate(EngineContext* ctx){
+    print(ctx, GLOBAL_BRICK_ERASE);
+    (ctx->current_brick).rotation += KEYMAP_ROTATION_CONST_DEG;
+    print(ctx, GLOBAL_BRICK_CHAR);
 }
 
 /****************************************************
  * Private functions
  ****************************************************/
-static void print(const Brick* brick, char gamefield[ENGINE_GAMEFIELD_HEIGHT][ENGINE_GAMEFIELD_WIDTH], pthread_mutex_t* mtx, char print_char){
-    pthread_mutex_lock(mtx);
-    switch (brick->type)
+static void print(EngineContext* ctx, char print_char){
+    pthread_mutex_lock(&(ctx->gamefield_mtx));
+    switch ((ctx->current_brick).type)
     {
     case BT_LONG:
-        print_long(brick, gamefield, print_char);
+        print_long(ctx, print_char);
         break;
     
     default:
         break;
     }
-    pthread_mutex_unlock(mtx);
+    pthread_mutex_unlock(&(ctx->gamefield_mtx));
 }
 
-static void print_long(const Brick* brick, char gamefield[ENGINE_GAMEFIELD_HEIGHT][ENGINE_GAMEFIELD_WIDTH], char print_char){
+static void print_long(EngineContext* ctx, char print_char){
 
+    Brick* brick = &(ctx->current_brick);
     switch(brick->rotation){
         case 0:
         case 180:
-            gamefield[brick->y][brick->x]  = print_char;
-            gamefield[brick->y][brick->x+1] = print_char;
-            gamefield[brick->y][brick->x+2] = print_char;
-            gamefield[brick->y][brick->x+3] = print_char;
-            gamefield[brick->y][ENGINE_GAMEFIELD_WIDTH-1] = '\0';
+            ctx->gamefield[brick->y][brick->x]   = print_char;
+            ctx->gamefield[brick->y][brick->x+1] = print_char;
+            ctx->gamefield[brick->y][brick->x+2] = print_char;
+            ctx->gamefield[brick->y][brick->x+3] = print_char;
+            ctx->gamefield[brick->y][ENGINE_GAMEFIELD_WIDTH-1] = '\0';
             break;
         case 90:
         case 270:
-            gamefield[brick->y][brick->x]   = print_char;
-            gamefield[brick->y+1][brick->x] = print_char;
-            gamefield[brick->y+2][brick->x] = print_char;
-            gamefield[brick->y+3][brick->x] = print_char;
-            gamefield[brick->y][ENGINE_GAMEFIELD_WIDTH-1] = '\0';
+            ctx->gamefield[brick->y][brick->x]   = print_char;
+            ctx->gamefield[brick->y+1][brick->x] = print_char;
+            ctx->gamefield[brick->y+2][brick->x] = print_char;
+            ctx->gamefield[brick->y+3][brick->x] = print_char;
+            ctx->gamefield[brick->y][ENGINE_GAMEFIELD_WIDTH-1] = '\0';
             break;
         default:
             break;

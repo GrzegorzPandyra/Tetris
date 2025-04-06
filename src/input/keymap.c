@@ -1,20 +1,33 @@
 #include "keymap.h"
 #include "global.h"
+#include "brick.h"
+#include "engine.h"
+#include "assert.h"
 
 #define NUM_ELEM(x) (sizeof(x)/sizeof(x[0]))
 
+/****************************************************
+ * Typedefs
+ ****************************************************/
 typedef struct
 {
     char key;
     void (*keyhandler)(void);
 } KeyMapping;
 
+/****************************************************
+ * Private functions declarations
+ ****************************************************/
 static void keyhandler_left(void);
 static void keyhandler_right(void);
 static void keyhandler_down(void);
 static void keyhandler_pause(void);
+static void keyhandler_rotate(void);
 static void keyhandler_exit(void);
 
+/****************************************************
+ * Private variables
+ ****************************************************/
 static KeyMapping mapping[] = 
 {
     {'a', keyhandler_left},
@@ -25,9 +38,14 @@ static KeyMapping mapping[] =
     {'S', keyhandler_down},
     {'p', keyhandler_pause},
     {'P', keyhandler_pause},
+    {'r', keyhandler_rotate},
+    {'R', keyhandler_rotate},
     {'.', keyhandler_exit}
 };
 
+/****************************************************
+ * Public functions
+ ****************************************************/
 void keymap_map(char c)
 {
     
@@ -36,10 +54,37 @@ void keymap_map(char c)
         if(mapping[i].key == c) mapping[i].keyhandler();
     }
 }
-static void keyhandler_left(void){}
-static void keyhandler_right(void){}
-static void keyhandler_down(void){}
+
+/****************************************************
+ * Private functions
+ ****************************************************/
+static void keyhandler_left(void)
+{
+    EngineContext* ctx = engine_get_context();
+    assert(ctx != NULL);
+    brick_move(ctx, 0, -1);
+}
+
+static void keyhandler_right(void)
+{
+    EngineContext* ctx = engine_get_context();
+    assert(ctx != NULL);
+    brick_move(ctx, 0, 1);
+}
+
+static void keyhandler_down(void)
+{
+    EngineContext* ctx = engine_get_context();
+    assert(ctx != NULL);
+    brick_move(ctx, 1, 0);
+}
 static void keyhandler_pause(void){}
+static void keyhandler_rotate(void)
+{
+    EngineContext* ctx = engine_get_context();
+    assert(ctx != NULL);
+    brick_rotate(ctx);
+}
 static void keyhandler_exit(void){
     shutdown();
 }
