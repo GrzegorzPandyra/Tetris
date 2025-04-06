@@ -15,6 +15,11 @@
  * Typedefs
  ****************************************************/
 
+ /****************************************************
+ * Private functions
+ ****************************************************/
+ static void shift_down(int row);
+
 /****************************************************
  * Local variables
  ****************************************************/
@@ -40,7 +45,6 @@ void engine_init(void)
     srand(time(NULL));
     brick_get_new(&ecb.ctx);
     ui_set_gamefield(ecb.ctx.gamefield);
-    //keymap_set_current_brick(&ecb.ctx.current_brick);
     ecb.init_complete = true;
 }
 
@@ -56,6 +60,7 @@ void engine_init(void)
     {
         brick_move(&ecb.ctx, 1, 0);
     }
+    check_full_rows();
 
     struct timespec ts = {0, ENGINE_TICK_NS};
     nanosleep(&ts, NULL);
@@ -66,6 +71,31 @@ EngineContext* engine_get_context(void)
     return &ecb.ctx;
 }
 
+void check_full_rows(void)
+{
+    for(int i=ENGINE_GAMEFIELD_HEIGHT; i>0; i--)
+    {
+        for(int j=0; j<ENGINE_GAMEFIELD_WIDTH; j++)
+        {
+            if(ecb.ctx.gamefield[i][j] != GLOBAL_BRICK_SETTLED) break;
+            if(j == ENGINE_GAMEFIELD_WIDTH-1)
+            {
+                ecb.score += 100;
+                shift_down(i);
+            }
+        }
+    }
+}
+
 /****************************************************
  * Private functions
  ****************************************************/
+
+static void shift_down(int row)
+{
+    stdlog("SHIFT DOWN");
+    for(; row>0; row--)
+    {
+        memcpy(ecb.ctx.gamefield[row], ecb.ctx.gamefield[row-1], sizeof(char)*ENGINE_GAMEFIELD_WIDTH);
+    }
+}

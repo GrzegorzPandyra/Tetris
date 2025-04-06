@@ -54,13 +54,11 @@ CollisionType check_bottom(const EngineContext* ctx)
 
         if(p.y >= ENGINE_GAMEFIELD_HEIGHT)
         {
-            stdlog("COLLISION BOTTOM (BTM)");
             return COLLISION_BOTTOM;
         }
 
         if (ctx->gamefield[p.y][p.x] == GLOBAL_BRICK_SETTLED)
         {
-            stdlog("COLLISION BOTTOM (SET)");
             return COLLISION_BOTTOM;
         }
     }
@@ -76,15 +74,13 @@ CollisionType check_left(const EngineContext* ctx)
         p.y = ctx->current_brick.collision_blocks[i].y;
         p.x = ctx->current_brick.collision_blocks[i].x-1;
 
-        if(p.x == 0)
+        if(p.x < 0)
         {
-            stdlog("COLLISION LEFT");
             return COLLISION_LEFT;
         }
 
         if (ctx->gamefield[p.y][p.x] == GLOBAL_BRICK_SETTLED)
         {
-            stdlog("COLLISION LEFT");
             return COLLISION_LEFT;
         }
     }
@@ -102,13 +98,11 @@ CollisionType check_right(const EngineContext* ctx)
 
         if(p.x == ENGINE_GAMEFIELD_WIDTH)
         {
-            stdlog("COLLISION RIGHT");
             return COLLISION_RIGHT;
         }
 
         if (ctx->gamefield[p.y][p.x] == GLOBAL_BRICK_SETTLED)
         {
-            stdlog("COLLISION RIGHT");
             return COLLISION_RIGHT;
         }
     }

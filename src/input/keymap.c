@@ -103,6 +103,7 @@ static void keyhandler_down(void)
     {
         brick_move(ctx, 1, 0);
     }
+    check_full_rows();
 }
 static void keyhandler_pause(void){}
 static void keyhandler_rotate(void)
