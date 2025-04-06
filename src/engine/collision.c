@@ -52,15 +52,15 @@ CollisionType check_bottom(const EngineContext* ctx)
         p.y = ctx->current_brick.collision_blocks[i].y+1;
         p.x = ctx->current_brick.collision_blocks[i].x;
 
-        if(p.y == ENGINE_GAMEFIELD_HEIGHT)
+        if(p.y >= ENGINE_GAMEFIELD_HEIGHT)
         {
-            stdlog("COLLISION BOTTOM");
+            stdlog("COLLISION BOTTOM (BTM)");
             return COLLISION_BOTTOM;
         }
 
         if (ctx->gamefield[p.y][p.x] == GLOBAL_BRICK_SETTLED)
         {
-            stdlog("COLLISION BOTTOM");
+            stdlog("COLLISION BOTTOM (SET)");
             return COLLISION_BOTTOM;
         }
     }

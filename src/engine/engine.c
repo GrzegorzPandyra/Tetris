@@ -38,7 +38,7 @@ void engine_init(void)
     }
     pthread_mutex_unlock(&ecb.ctx.gamefield_mtx);
     srand(time(NULL));
-    ecb.ctx.current_brick = brick_get_new();
+    brick_get_new(&ecb.ctx);
     ui_set_gamefield(ecb.ctx.gamefield);
     //keymap_set_current_brick(&ecb.ctx.current_brick);
     ecb.init_complete = true;
@@ -50,7 +50,7 @@ void engine_init(void)
     if(collisionStatus == COLLISION_BOTTOM)
     {
         brick_settle(&ecb.ctx);
-        ecb.ctx.current_brick = brick_get_new();
+        brick_get_new(&ecb.ctx);
     } 
     else 
     {

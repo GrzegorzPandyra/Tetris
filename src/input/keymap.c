@@ -97,7 +97,7 @@ static void keyhandler_down(void)
     if(collisionStatus == COLLISION_BOTTOM)
     {
         brick_settle(ctx);
-        ctx->current_brick = brick_get_new();
+        brick_get_new(ctx);
     } 
     else 
     {
