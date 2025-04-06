@@ -14,5 +14,6 @@
 Brick brick_get_new(void);
 void brick_move(EngineContext* ctx, int mv_y, int mv_x);
 void brick_rotate(EngineContext* ctx);
+void brick_settle(EngineContext* ctx);
 
 #endif

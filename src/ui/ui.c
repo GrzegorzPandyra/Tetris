@@ -67,7 +67,7 @@ static Window win[] =
     {WIN_ID_NEXT,  NULL, WIN_NEXT_X,  WIN_NEXT_Y,  WIN_NEXT_WIDTH,  WIN_NEXT_HEIGHT,  print_next_window},
     {WIN_ID_MENU,  NULL, WIN_MENU_X,  WIN_MENU_Y,  WIN_MENU_WIDTH,  WIN_MENU_HEIGHT,  print_menu_window}
 };
-static char (*gamefield)[ENGINE_GAMEFIELD_WIDTH] = NULL;
+static char (*gamefield)[ENGINE_GAMEFIELD_WIDTH+ENGINE_GAMEFIELD_NULLCHAR_INDEX] = NULL;
 
 /****************************************************
  * API

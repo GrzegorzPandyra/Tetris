@@ -3,6 +3,7 @@
 #include "brick.h"
 #include "engine.h"
 #include "assert.h"
+#include "collision.h"
 
 #define NUM_ELEM(x) (sizeof(x)/sizeof(x[0]))
 
@@ -62,21 +63,46 @@ static void keyhandler_left(void)
 {
     EngineContext* ctx = engine_get_context();
     assert(ctx != NULL);
-    brick_move(ctx, 0, -1);
+    CollisionType collisionStatus = collision_check(ctx, COLLISION_LEFT);
+    if(collisionStatus == COLLISION_LEFT)
+    {
+        
+    } 
+    else 
+    {
+        brick_move(ctx, 0, -1);
+    }
 }
 
 static void keyhandler_right(void)
 {
     EngineContext* ctx = engine_get_context();
     assert(ctx != NULL);
-    brick_move(ctx, 0, 1);
+    CollisionType collisionStatus = collision_check(ctx, COLLISION_RIGHT);
+    if(collisionStatus == COLLISION_RIGHT)
+    {
+
+    } 
+    else 
+    {
+        brick_move(ctx, 0, 1);
+    }
 }
 
 static void keyhandler_down(void)
 {
     EngineContext* ctx = engine_get_context();
     assert(ctx != NULL);
-    brick_move(ctx, 1, 0);
+    CollisionType collisionStatus = collision_check(ctx, COLLISION_BOTTOM);
+    if(collisionStatus == COLLISION_BOTTOM)
+    {
+        brick_settle(ctx);
+        ctx->current_brick = brick_get_new();
+    } 
+    else 
+    {
+        brick_move(ctx, 1, 0);
+    }
 }
 static void keyhandler_pause(void){}
 static void keyhandler_rotate(void)

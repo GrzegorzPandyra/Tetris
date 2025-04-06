@@ -8,6 +8,7 @@
 #include "brick.h"
 #include "log.h"
 #include "keymap.h"
+#include "collision.h"
 
 #define ENGINE_TICK_NS 1000*1000*999 /* 1s */
 /****************************************************
@@ -31,9 +32,9 @@ void engine_init(void)
 {
     ecb.init_complete = false;
     pthread_mutex_lock(&ecb.ctx.gamefield_mtx);
-    memset(ecb.ctx.gamefield, ' ',  sizeof(char)*ENGINE_GAMEFIELD_WIDTH*ENGINE_GAMEFIELD_HEIGHT);
+    memset(ecb.ctx.gamefield, ' ',  sizeof(char)*(ENGINE_GAMEFIELD_WIDTH+ENGINE_GAMEFIELD_NULLCHAR_INDEX)*ENGINE_GAMEFIELD_HEIGHT);
     for(int i=0; i<ENGINE_GAMEFIELD_HEIGHT; i++){
-        ecb.ctx.gamefield[i][ENGINE_GAMEFIELD_WIDTH-1] = '\0';
+        ecb.ctx.gamefield[i][ENGINE_GAMEFIELD_WIDTH] = '\0';
     }
     pthread_mutex_unlock(&ecb.ctx.gamefield_mtx);
     srand(time(NULL));
@@ -45,7 +46,16 @@ void engine_init(void)
 
  void engine_run(void)
 {
-    brick_move(&ecb.ctx, 1, 0);
+    CollisionType collisionStatus = collision_check(&ecb.ctx, COLLISION_BOTTOM);
+    if(collisionStatus == COLLISION_BOTTOM)
+    {
+        brick_settle(&ecb.ctx);
+        ecb.ctx.current_brick = brick_get_new();
+    } 
+    else 
+    {
+        brick_move(&ecb.ctx, 1, 0);
+    }
 
     struct timespec ts = {0, ENGINE_TICK_NS};
     nanosleep(&ts, NULL);
