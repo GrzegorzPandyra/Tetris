@@ -1,6 +1,8 @@
 #include <ncurses.h>
+#include <string.h>
 #include "ui.h"
 #include "global.h"
+#include "brick.h"
 #include "log.h"
 
 #define WIN_MAIN_X 10
@@ -16,12 +18,18 @@
 #define WIN_NEXT_X      WIN_SCORE_X
 #define WIN_NEXT_Y     (WIN_SCORE_Y+WIN_SCORE_HEIGHT)
 #define WIN_NEXT_WIDTH  WIN_SCORE_WIDTH
-#define WIN_NEXT_HEIGHT 3
+#define WIN_NEXT_WIDTH_NO_BORDER  (WIN_SCORE_WIDTH-2)
+#define WIN_NEXT_HEIGHT 5
+#define WIN_NEXT_BRICK_ROWS 2
+#define WIN_NEXT_BRICK_OFFSET_X (WIN_NEXT_WIDTH_NO_BORDER/WIN_NEXT_BRICK_ROWS-2)
+#define WIN_NEXT_BRICK_OFFSET_Y 2
 
 #define WIN_MENU_X      WIN_NEXT_X
 #define WIN_MENU_Y     (WIN_NEXT_Y+WIN_NEXT_HEIGHT)
 #define WIN_MENU_WIDTH  WIN_SCORE_WIDTH
-#define WIN_MENU_HEIGHT 8
+#define WIN_MENU_HEIGHT 6
+
+#define NULLCHAR_INDEX 1
 
 #define NUM_ELEM(x) (sizeof(x)/sizeof(x[0]))
 
@@ -132,13 +140,37 @@ static void print_main_window(void)
 static void print_score_window(void)
 {
     int score = engine_get_score();
-    mvwprintw(win[WIN_ID_SCORE].win, 1, 1, "Score: %d", score);
     box(win[WIN_ID_SCORE].win, 0, 0);
+    mvwprintw(win[WIN_ID_SCORE].win, 0, 4, "Score");
+    mvwprintw(win[WIN_ID_SCORE].win, 1, 2, "%d", score);
 }
 
 static void print_next_window(void)
 {
+    /* Setup window */
     box(win[WIN_ID_NEXT].win, 0, 0);
+    mvwprintw(win[WIN_ID_NEXT].win, 0, 2, "Next brick");
+
+    /* Prep buffer */
+    char buff[WIN_NEXT_BRICK_ROWS][WIN_NEXT_WIDTH_NO_BORDER+NULLCHAR_INDEX] = {0};
+    memset(buff, ' ', sizeof(buff));
+    buff[0][WIN_NEXT_WIDTH_NO_BORDER] = '\0';
+    buff[1][WIN_NEXT_WIDTH_NO_BORDER] = '\0';
+
+    /* Get collision data */
+    EngineContext* ctx = engine_get_context();
+    const Point* ptr = brick_get_collision_data(ctx->next_brick.type);
+
+    /* Set buffer */
+    for(int i=0; i<GLOBAL_COLLISION_BLOCK_NUM; i++)
+    {
+        buff[ptr->y][ptr->x+WIN_NEXT_BRICK_OFFSET_X] = GLOBAL_BRICK_CHAR;
+        ptr++;
+    }
+    
+    /* Print buffer */
+    mvwprintw(win[WIN_ID_NEXT].win, WIN_NEXT_BRICK_OFFSET_Y,   1, "%s", buff[0]);
+    mvwprintw(win[WIN_ID_NEXT].win, WIN_NEXT_BRICK_OFFSET_Y+1, 1, "%s", buff[1]);
 }
 
 static void print_menu_window(void)

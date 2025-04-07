@@ -24,7 +24,7 @@ static const Point COLLISION_BOUNDS[BT_COUNT*GLOBAL_COLLISION_BLOCK_NUM][GLOBAL_
     {{0,0}, {0,1 }, {1,0 }, {1,1 }}, /* 90  Square */
     {{0,0}, {0,1 }, {1,0 }, {1,1 }}, /* 180 Square */
     {{0,0}, {0,1 }, {1,0 }, {1,1 }}, /* 270 Square */
-    {{0,0}, {1,0 }, {2,0 }, {1,-1}}, /* 0   Symetrical */
+    {{0,0}, {-1,1}, {0,1 }, {1,1 }}, /* 0   Symetrical */
     {{0,0}, {0,1 }, {0,2 }, {1,1 }}, /* 90  Symetrical */
     {{0,0}, {1,0 }, {2,0 }, {1,1 }}, /* 180 Symetrical */
     {{0,0}, {0,1 }, {0,2 }, {-1,1}}, /* 270 Symetrical */
@@ -55,10 +55,14 @@ static void update_collision_bounds(EngineContext* ctx);
  ****************************************************/
 void brick_get_new(EngineContext* ctx)
 {
-    ctx->current_brick.type = rand()%BT_COUNT;
-    ctx->current_brick.x = GLOBAL_MAIN_WIN_WIDTH/2-2;
-    ctx->current_brick.y = 0;
-    ctx->current_brick.rotation = 0;
+    ctx->current_brick.type     = ctx->next_brick.type;
+    ctx->current_brick.x        = ctx->next_brick.x;
+    ctx->current_brick.y        = ctx->next_brick.y;
+    ctx->current_brick.rotation = ctx->next_brick.rotation;
+    ctx->next_brick.type        = rand()%BT_COUNT;
+    ctx->next_brick.x           = GLOBAL_MAIN_WIN_WIDTH/2-2;
+    ctx->next_brick.y           = 0;
+    ctx->next_brick.rotation    = 0;
     update_collision_bounds(ctx);
 }
 
@@ -84,6 +88,11 @@ void brick_rotate(EngineContext* ctx)
 void brick_settle(EngineContext* ctx)
 {
     print(ctx, GLOBAL_BRICK_SETTLED);
+}
+
+const Point* brick_get_collision_data(int type)
+{
+    return &COLLISION_BOUNDS[type*GLOBAL_COLLISION_BLOCK_NUM][0];
 }
 
 /****************************************************

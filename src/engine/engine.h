@@ -11,6 +11,7 @@
 
 typedef struct EngineContext {
     Brick current_brick;
+    Brick next_brick;
     char gamefield[ENGINE_GAMEFIELD_HEIGHT][ENGINE_GAMEFIELD_WIDTH+ENGINE_GAMEFIELD_NULLCHAR_INDEX];
     pthread_mutex_t gamefield_mtx;
 } EngineContext;
