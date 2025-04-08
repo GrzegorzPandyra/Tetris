@@ -4,6 +4,7 @@
 #include "global.h"
 #include "brick.h"
 #include "log.h"
+#include "collision.h"
 
 #define KEYMAP_ROTATION_CONST_DEG 90
 
@@ -50,6 +51,7 @@ static const Point COLLISION_BOUNDS[BT_COUNT*GLOBAL_COLLISION_BLOCK_NUM][GLOBAL_
  ****************************************************/
 static void print(EngineContext* ctx, char print_char);
 static void update_collision_bounds(EngineContext* ctx);
+static bool collision_precheck(EngineContext ctx);
 /****************************************************
  * API
  ****************************************************/
@@ -79,10 +81,16 @@ void brick_move(EngineContext* ctx, int mv_y, int mv_x)
 
 void brick_rotate(EngineContext* ctx)
 {
-    print(ctx, GLOBAL_BRICK_ERASE);
-    (ctx->current_brick).rotation += KEYMAP_ROTATION_CONST_DEG;
-    (ctx->current_brick).rotation %= 360;
-    print(ctx, GLOBAL_BRICK_CHAR);
+    if(ctx == NULL) return;
+
+    if(collision_precheck(*ctx))
+    {
+        print(ctx, GLOBAL_BRICK_ERASE);
+        (ctx->current_brick).rotation += KEYMAP_ROTATION_CONST_DEG;
+        (ctx->current_brick).rotation %= 360;
+        update_collision_bounds(ctx);
+        print(ctx, GLOBAL_BRICK_CHAR);
+    }
 }
 
 void brick_settle(EngineContext* ctx)
@@ -124,4 +132,14 @@ static void print(EngineContext* ctx, char print_char){
     ctx->gamefield[ctx->current_brick.y][ENGINE_GAMEFIELD_WIDTH] = '\0';
     update_collision_bounds(ctx);
     pthread_mutex_unlock(&(ctx->gamefield_mtx));
+}
+
+static bool collision_precheck(EngineContext ctx)
+{
+    ctx.current_brick.rotation += KEYMAP_ROTATION_CONST_DEG;
+    ctx.current_brick.rotation %= 360;
+    if(collision_check(&ctx, COLLISION_BOTTOM) != COLLISION_NONE) return false;
+    if(collision_check(&ctx, COLLISION_LEFT)   != COLLISION_NONE) return false;
+    if(collision_check(&ctx, COLLISION_RIGHT)  != COLLISION_NONE) return false;
+    return true;
 }
