@@ -34,6 +34,11 @@
 #define WIN_LEVEL_WIDTH  WIN_MAIN_WIDTH
 #define WIN_LEVEL_HEIGHT 3
 
+#define WIN_STATUS_X      WIN_SCORE_X
+#define WIN_STATUS_Y      WIN_LEVEL_Y
+#define WIN_STATUS_WIDTH  WIN_SCORE_WIDTH
+#define WIN_STATUS_HEIGHT WIN_LEVEL_HEIGHT
+
 #define NULLCHAR_INDEX 1
 
 #define NUM_ELEM(x) (sizeof(x)/sizeof(x[0]))
@@ -48,7 +53,8 @@ typedef enum
     WIN_ID_SCORE,
     WIN_ID_NEXT,
     WIN_ID_MENU,
-    WIN_ID_LEVEL
+    WIN_ID_LEVEL,
+    WIN_ID_STATUS
 } WindowId;
 typedef struct 
 {
@@ -71,17 +77,19 @@ static void print_score_window(void);
 static void print_next_window(void);
 static void print_menu_window(void);
 static void print_level_window(void);
+static void print_status_window(void);
 
 /****************************************************
  * Local variables
  ****************************************************/
 static Window win[] = 
 {
-    {WIN_ID_MAIN,  NULL, WIN_MAIN_X,  WIN_MAIN_Y,  WIN_MAIN_WIDTH,  WIN_MAIN_HEIGHT,  print_main_window},
-    {WIN_ID_SCORE, NULL, WIN_SCORE_X, WIN_SCORE_Y, WIN_SCORE_WIDTH, WIN_SCORE_HEIGHT, print_score_window},
-    {WIN_ID_NEXT,  NULL, WIN_NEXT_X,  WIN_NEXT_Y,  WIN_NEXT_WIDTH,  WIN_NEXT_HEIGHT,  print_next_window},
-    {WIN_ID_MENU,  NULL, WIN_MENU_X,  WIN_MENU_Y,  WIN_MENU_WIDTH,  WIN_MENU_HEIGHT,  print_menu_window},
-    {WIN_ID_LEVEL, NULL, WIN_LEVEL_X, WIN_LEVEL_Y, WIN_LEVEL_WIDTH, WIN_LEVEL_HEIGHT, print_level_window}
+    {WIN_ID_MAIN,   NULL, WIN_MAIN_X,   WIN_MAIN_Y,   WIN_MAIN_WIDTH,   WIN_MAIN_HEIGHT,   print_main_window  },
+    {WIN_ID_SCORE,  NULL, WIN_SCORE_X,  WIN_SCORE_Y,  WIN_SCORE_WIDTH,  WIN_SCORE_HEIGHT,  print_score_window },
+    {WIN_ID_NEXT,   NULL, WIN_NEXT_X,   WIN_NEXT_Y,   WIN_NEXT_WIDTH,   WIN_NEXT_HEIGHT,   print_next_window  },
+    {WIN_ID_MENU,   NULL, WIN_MENU_X,   WIN_MENU_Y,   WIN_MENU_WIDTH,   WIN_MENU_HEIGHT,   print_menu_window  },
+    {WIN_ID_LEVEL,  NULL, WIN_LEVEL_X,  WIN_LEVEL_Y,  WIN_LEVEL_WIDTH,  WIN_LEVEL_HEIGHT,  print_level_window },
+    {WIN_ID_STATUS, NULL, WIN_STATUS_X, WIN_STATUS_Y, WIN_STATUS_WIDTH, WIN_STATUS_HEIGHT, print_status_window}
 };
 static char (*gamefield)[ENGINE_GAMEFIELD_WIDTH+ENGINE_GAMEFIELD_NULLCHAR_INDEX] = NULL;
 
@@ -201,4 +209,27 @@ static void print_level_window(void)
     GameContext* gctx = engine_get_game_context();
 
     mvwprintw(win[WIN_ID_LEVEL].win, 1, 2, "== %d ==", gctx->level);
+}
+
+static void print_status_window(void)
+{
+    box(win[WIN_ID_STATUS].win, 0, 0);
+    mvwprintw(win[WIN_ID_STATUS].win, 0, 3, "Status");
+
+    GameContext* gctx = engine_get_game_context();
+    switch (gctx->status)
+    {
+        case GS_PAUSED:
+            mvwprintw(win[WIN_ID_STATUS].win, 1, 2, "PAUSED");
+            break;
+        case GS_GAME_OVER:
+            mvwprintw(win[WIN_ID_STATUS].win, 1, 2, "GAME OVER");
+            break;
+        /* Fallthrough */
+        case GS_INIT:
+        case GS_RUNNING:
+        default:
+            mvwprintw(win[WIN_ID_STATUS].win, 1, 2, "         ");
+        break;
+    }
 }
