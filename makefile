@@ -14,6 +14,7 @@ SRC_LIST += $(wildcard $(SRC_DIR)/ui/*.c)
 SRC_LIST += $(wildcard $(SRC_DIR)/input/*.c)
 SRC_LIST += $(wildcard $(SRC_DIR)/log/*.c)
 SRC_LIST += $(wildcard $(SRC_DIR)/engine/*.c)
+SRC_LIST += $(wildcard $(SRC_DIR)/rw/*.c)
 
 #assemble list of include directories
 INCLUDE_DIR += -I $(SRC_DIR)
@@ -21,6 +22,7 @@ INCLUDE_DIR += -I $(SRC_DIR)/ui
 INCLUDE_DIR += -I $(SRC_DIR)/input
 INCLUDE_DIR += -I $(SRC_DIR)/log
 INCLUDE_DIR += -I $(SRC_DIR)/engine
+INCLUDE_DIR += -I $(SRC_DIR)/rw
 
 #compiler
 CC=gcc

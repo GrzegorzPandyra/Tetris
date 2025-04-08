@@ -27,7 +27,12 @@
 #define WIN_MENU_X      WIN_NEXT_X
 #define WIN_MENU_Y     (WIN_NEXT_Y+WIN_NEXT_HEIGHT)
 #define WIN_MENU_WIDTH  WIN_SCORE_WIDTH
-#define WIN_MENU_HEIGHT 6
+#define WIN_MENU_HEIGHT 7
+
+#define WIN_LEVEL_X      WIN_MAIN_X
+#define WIN_LEVEL_Y     (WIN_MAIN_Y-3)
+#define WIN_LEVEL_WIDTH  WIN_MAIN_WIDTH
+#define WIN_LEVEL_HEIGHT 3
 
 #define NULLCHAR_INDEX 1
 
@@ -42,7 +47,8 @@ typedef enum
     WIN_ID_MAIN,
     WIN_ID_SCORE,
     WIN_ID_NEXT,
-    WIN_ID_MENU
+    WIN_ID_MENU,
+    WIN_ID_LEVEL
 } WindowId;
 typedef struct 
 {
@@ -64,6 +70,7 @@ static void print_main_window(void);
 static void print_score_window(void);
 static void print_next_window(void);
 static void print_menu_window(void);
+static void print_level_window(void);
 
 /****************************************************
  * Local variables
@@ -73,7 +80,8 @@ static Window win[] =
     {WIN_ID_MAIN,  NULL, WIN_MAIN_X,  WIN_MAIN_Y,  WIN_MAIN_WIDTH,  WIN_MAIN_HEIGHT,  print_main_window},
     {WIN_ID_SCORE, NULL, WIN_SCORE_X, WIN_SCORE_Y, WIN_SCORE_WIDTH, WIN_SCORE_HEIGHT, print_score_window},
     {WIN_ID_NEXT,  NULL, WIN_NEXT_X,  WIN_NEXT_Y,  WIN_NEXT_WIDTH,  WIN_NEXT_HEIGHT,  print_next_window},
-    {WIN_ID_MENU,  NULL, WIN_MENU_X,  WIN_MENU_Y,  WIN_MENU_WIDTH,  WIN_MENU_HEIGHT,  print_menu_window}
+    {WIN_ID_MENU,  NULL, WIN_MENU_X,  WIN_MENU_Y,  WIN_MENU_WIDTH,  WIN_MENU_HEIGHT,  print_menu_window},
+    {WIN_ID_LEVEL, NULL, WIN_LEVEL_X, WIN_LEVEL_Y, WIN_LEVEL_WIDTH, WIN_LEVEL_HEIGHT, print_level_window}
 };
 static char (*gamefield)[ENGINE_GAMEFIELD_WIDTH+ENGINE_GAMEFIELD_NULLCHAR_INDEX] = NULL;
 
@@ -139,7 +147,7 @@ static void print_main_window(void)
 
 static void print_score_window(void)
 {
-    int score = engine_get_score();
+    int score = engine_get_game_context()->score;
     box(win[WIN_ID_SCORE].win, 0, 0);
     mvwprintw(win[WIN_ID_SCORE].win, 0, 4, "Score");
     mvwprintw(win[WIN_ID_SCORE].win, 1, 2, "%d", score);
@@ -158,7 +166,7 @@ static void print_next_window(void)
     buff[1][WIN_NEXT_WIDTH_NO_BORDER] = '\0';
 
     /* Get collision data */
-    EngineContext* ctx = engine_get_context();
+    EngineContext* ctx = engine_get_engine_context();
     const Point* ptr = brick_get_collision_data(ctx->next_brick.type);
 
     /* Set buffer */
@@ -167,7 +175,7 @@ static void print_next_window(void)
         buff[ptr->y][ptr->x+WIN_NEXT_BRICK_OFFSET_X] = GLOBAL_BRICK_CHAR;
         ptr++;
     }
-    
+
     /* Print buffer */
     mvwprintw(win[WIN_ID_NEXT].win, WIN_NEXT_BRICK_OFFSET_Y,   1, "%s", buff[0]);
     mvwprintw(win[WIN_ID_NEXT].win, WIN_NEXT_BRICK_OFFSET_Y+1, 1, "%s", buff[1]);
@@ -176,4 +184,21 @@ static void print_next_window(void)
 static void print_menu_window(void)
 {
     box(win[WIN_ID_MENU].win, 0, 0);
+    mvwprintw(win[WIN_ID_MENU].win, 0, 5, "Menu");
+
+    mvwprintw(win[WIN_ID_MENU].win, 1, 1, "[1] Start");
+    mvwprintw(win[WIN_ID_MENU].win, 2, 1, "[P] Pause");
+    mvwprintw(win[WIN_ID_MENU].win, 3, 1, "[5] Save");
+    mvwprintw(win[WIN_ID_MENU].win, 4, 1, "[9] Load");
+    mvwprintw(win[WIN_ID_MENU].win, 5, 1, "[.] Exit");
+}
+
+static void print_level_window(void)
+{
+    box(win[WIN_ID_LEVEL].win, 0, 0);
+    mvwprintw(win[WIN_ID_LEVEL].win, 0, 3, "Level");
+
+    GameContext* gctx = engine_get_game_context();
+
+    mvwprintw(win[WIN_ID_LEVEL].win, 1, 2, "== %d ==", gctx->level);
 }
